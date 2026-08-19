@@ -1,0 +1,25 @@
+# Keep text files consistent across Windows, macOS, and Linux.
+* text=auto
+
+*.cs text eol=lf
+*.csproj text eol=lf
+*.props text eol=lf
+*.targets text eol=lf
+*.json text eol=lf
+*.http text eol=lf
+*.md text eol=lf
+*.sln text eol=crlf
+*.slnx text eol=lf
+
+# Treat common binary formats as binary.
+*.db binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+

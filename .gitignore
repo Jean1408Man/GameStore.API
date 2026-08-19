@@ -1,0 +1,60 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+
+# Visual Studio / VS Code / JetBrains Rider
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# .NET tooling and test output
+.dotnet/
+.nuget/
+TestResults/
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+
+# Local ASP.NET configuration and secrets
+appsettings.Local.json
+appsettings.*.Local.json
+.env
+.env.*
+!.env.example
+secrets.json
+
+# Local HTTP client environments
+http-client.env.json
+*.http.env.json
+
+# Local databases and SQLite auxiliary files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Logs, operating-system files, and temporary files
+*.log
+logs/
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*~
+
+# NuGet packages and generated package artifacts
+*.nupkg
+*.snupkg
+packages/
+!**/packages/build/
+
