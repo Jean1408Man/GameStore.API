@@ -1,5 +1,7 @@
 GET http://localhost:5127/games
 
+###
+GET http://localhost:5127/genres
 
 ###
 POST http://localhost:5127/games
@@ -11,6 +13,13 @@ Content-Type: application/json
   "price": 59.99,
   "releaseDate": "2017-03-03"
 }
+###
+POST http://localhost:5127/genres
+Content-Type: application/json
+
+{
+  "name": "Action"
+}
 
 ###
 PUT http://localhost:5127/games/1
@@ -21,4 +30,13 @@ Content-Type: application/json
     "genreid": 2,
     "price": 59.99,
     "releaseDate": "2017-03-03"
+}
+
+###
+###
+PUT http://localhost:5127/genres/1
+Content-Type: application/json
+
+{
+    "name": "Drama"
 }
