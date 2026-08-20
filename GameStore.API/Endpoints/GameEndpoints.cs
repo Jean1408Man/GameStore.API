@@ -1,4 +1,7 @@
+using GameStore.Api.Data;
 using GameStore.API.DTOs;
+using GameStore.API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.API.Endpoints;
 
@@ -8,59 +11,81 @@ public static class GameEndpoints
     {
         const string GetGameEndpointName = "GetGame";
         var group = app.MapGroup("/games");
-        List<GameDTO> games = new()
+
+        group.MapGet("", async (GameStoreContext context) =>
         {
-            new GameDTO(1, "Street Fighter II", "Fighting", 19.99M, new DateOnly(1992, 7, 15))
-        };
-
-        group.MapGet("", () => games);
-
-        group.MapGet("/{id}", (int id) =>
-        {
-            var game = games.Find(game => game.Id == id);
-            return game is not null ? Results.Ok(game) : Results.NotFound();
-        }).WithName(GetGameEndpointName);
-
-        group.MapPost("", (CreateGameDTO createGameDTO) =>
-        {
-            var game = new GameDTO(
-                games.Count + 1,
-                createGameDTO.Name,
-                createGameDTO.Genre,
-                createGameDTO.Price,
-                createGameDTO.ReleaseDate
-            );
-
-            games.Add(game);
-
-            return Results.CreatedAtRoute(GetGameEndpointName, new { id = game.Id }, game);
+            var games = await context.Games.Select(game => new GameDetailsDTO(
+                game.Id,
+                game.Name,
+                game.GenreId,
+                game.Price,
+                game.ReleaseDate
+            )).ToListAsync();
+            return Results.Ok(games);
         });
 
-        group.MapPut("/{id}", (int id, UpdateGameDTO updatedGame) =>
+        group.MapGet("/{id}",async (int id, GameStoreContext context) =>
         {
-            var index = games.FindIndex(game => game.Id == id);
-            if (index == -1)
+            var game = await context.Games.FindAsync(id);
+            if(game==null) return Results.NotFound();
+
+            var gameDetails = new GameDetailsDTO(
+                game.Id,
+                game.Name,
+                game.GenreId,
+                game.Price,
+                game.ReleaseDate
+            );
+
+            return Results.Ok(game);
+        }).WithName(GetGameEndpointName);
+
+        group.MapPost("", async (CreateGameDTO newGame, GameStoreContext context) =>
+        {
+            Game game = new (){
+                Name= newGame.Name,
+                GenreId= newGame.GenreId,
+                Price= newGame.Price,
+                ReleaseDate= newGame.ReleaseDate
+            };
+
+            context.Games.Add(game);
+            await context.SaveChangesAsync();
+
+            GameDetailsDTO gameDetails = new(
+                game.Id,
+                game.Name,
+                game.GenreId,
+                game.Price,
+                game.ReleaseDate
+            );
+            return Results.CreatedAtRoute(GetGameEndpointName, new { id = gameDetails.Id }, gameDetails);
+        });
+
+        group.MapPut("/{id}", async (int id, UpdateGameDTO updatedGame, GameStoreContext context) =>
+        {
+            Game? game = await context.Games.FindAsync(id);
+            if (game is null)
             {
                 return Results.NotFound();
             }
-            games[index] = new GameDTO(
-                id,
-                updatedGame.Name,
-                updatedGame.Genre,
-                updatedGame.Price,
-                updatedGame.ReleaseDate
-            );
+            game.Name = updatedGame.Name;
+            game.GenreId = updatedGame.GenreId;
+            game.Price = updatedGame.Price;
+            game.ReleaseDate = updatedGame.ReleaseDate;
+            await context.SaveChangesAsync();
             return Results.NoContent();
         });
 
-        group.MapDelete("/{id}", (int id) =>
+        group.MapDelete("/{id}", async (int id, GameStoreContext context) =>
         {
-            var index = games.FindIndex(game => game.Id == id);
-            if (index == -1)
+            Game? game = await context.Games.FindAsync(id);
+            if (game is null)
             {
                 return Results.NotFound();
             }
-            games.RemoveAt(index);
+            context.Games.Remove(game);
+            await context.SaveChangesAsync();
             return Results.NoContent();
         });
     }
